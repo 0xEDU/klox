@@ -1,7 +1,7 @@
 package ft.etachott
 
+import ft.etachott.scanner.Scanner
 import java.io.File
-import java.util.*
 import kotlin.system.exitProcess
 
 class Runner {
@@ -24,8 +24,8 @@ class Runner {
     }
 
     private fun runCode(source: String) {
-        val scanner = Scanner(source)
-        val tokens = scanner.tokens()
+        val scanner = Scanner(source, reporter)
+        val tokens = scanner.tokens
 
         tokens.forEach {
             println("Token == $it")
