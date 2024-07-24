@@ -5,13 +5,32 @@ import ft.etachott.tokens.Token
 import ft.etachott.tokens.TokenType
 
 class Scanner(
-    private val source: String,
     private val reporter: Reporter,
 ) {
-    var tokens: MutableList<Token> = mutableListOf()
+    private var tokens: MutableList<Token> = mutableListOf()
+    private var source: String = ""
     private var start = 0
     private var current = 0
     private var line = 1
+
+    private val keywords: Map<String, TokenType> = mapOf(
+        "and" to TokenType.AND,
+        "class" to TokenType.CLASS,
+        "else" to TokenType.ELSE,
+        "false" to TokenType.FALSE,
+        "for" to TokenType.FOR,
+        "fun" to TokenType.FUN,
+        "if" to TokenType.IF,
+        "let" to TokenType.LET,
+        "nil" to TokenType.NIL,
+        "or" to TokenType.OR,
+        "print" to TokenType.PRINT,
+        "return" to TokenType.RETURN,
+        "super" to TokenType.SUPER,
+        "this" to TokenType.THIS,
+        "true" to TokenType.TRUE,
+        "while" to TokenType.WHILE,
+    )
 
     private fun isAtEnd(): Boolean = current >= source.length
 
@@ -37,8 +56,7 @@ class Scanner(
     private fun peekNext(): Char = if (current + 1 >= source.length) '\u0000' else source[current + 1]
 
     private fun scanToken() {
-        val c: Char = advance()
-        when (c) {
+        when (val c: Char = advance()) {
             '(' -> addToken(TokenType.LEFT_PAREN)
             ')' -> addToken(TokenType.RIGHT_PAREN)
             '{' -> addToken(TokenType.LEFT_BRACE)
@@ -61,10 +79,19 @@ class Scanner(
 
             '"' -> string()
             in '0'..'9' -> number()
+            in 'a'..'z', in 'A'..'Z', '_' -> identifier()
             '\n' -> line++
-            ' ', '\r', '\t' -> {}
+            32.toChar(), '\r', '\t' -> {}
             else -> reporter.error(line, "Unrecognized character: $c")
         }
+    }
+
+    private fun identifier() {
+        while(peek().isLetterOrDigit()) advance()
+
+        val text = source.substring(start, current)
+        val type: TokenType = keywords[text] ?: return addToken(TokenType.IDENTIFIER)
+        addToken(type)
     }
 
     private fun number() {
@@ -93,12 +120,13 @@ class Scanner(
         addToken(TokenType.STRING, value)
     }
 
-    fun scanTokens(): List<Token> {
+    fun scanTokens(rawSource: String): List<Token> {
+        source = rawSource
         while (!isAtEnd()) {
             start = current;
             scanToken()
-            tokens.addLast(Token(TokenType.EOF, "", null, line))
         }
+        tokens.addLast(Token(TokenType.EOF, "", null, line))
         return tokens
     }
 }

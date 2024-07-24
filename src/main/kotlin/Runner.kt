@@ -24,8 +24,8 @@ class Runner {
     }
 
     private fun runCode(source: String) {
-        val scanner = Scanner(source, reporter)
-        val tokens = scanner.tokens
+        val scanner = Scanner(reporter)
+        val tokens = scanner.scanTokens(source)
 
         tokens.forEach {
             println("Token == $it")
