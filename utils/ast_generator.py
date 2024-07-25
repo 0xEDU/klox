@@ -9,7 +9,7 @@ TWELVE_SPACES = f"{'':12}"
 def define_visitor(stream, base_name, types):
     stream.write(f"{FOUR_SPACES}interface Visitor<R> {{\n")
     for type_name in types.keys():
-        stream.write(f"{EIGHT_SPACES}fun visit{type_name}{base_name}({base_name.lower()}: {type_name}): R\n")
+        stream.write(f"{EIGHT_SPACES}fun visit{type_name}{base_name}({base_name.lower()}: {type_name}?): R\n")
     stream.write(f"{FOUR_SPACES}}}\n")
     pass
 

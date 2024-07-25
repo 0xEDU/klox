@@ -4,10 +4,10 @@ import ft.etachott.tokens.Token
 
 sealed class Expr {
     interface Visitor<R> {
-        fun visitBinaryExpr(expr: Binary): R
-        fun visitGroupingExpr(expr: Grouping): R
-        fun visitLiteralExpr(expr: Literal): R
-        fun visitUnaryExpr(expr: Unary): R
+        fun visitBinaryExpr(expr: Binary?): R
+        fun visitGroupingExpr(expr: Grouping?): R
+        fun visitLiteralExpr(expr: Literal?): R
+        fun visitUnaryExpr(expr: Unary?): R
     }
     data class Binary (
         val left: Expr?,
