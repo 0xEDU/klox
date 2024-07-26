@@ -85,8 +85,8 @@ class Interpreter(
                 checkNumberOperands(expr.operator, left, right)
                 (left as Double) <= (right as Double)
             }
-            TokenType.BANG_EQUAL -> isEqual(left, right)
-            TokenType.EQUAL_EQUAL -> !isEqual(left, right)
+            TokenType.BANG_EQUAL -> !isEqual(left, right)
+            TokenType.EQUAL_EQUAL -> isEqual(left, right)
             else -> null
         }
     }
