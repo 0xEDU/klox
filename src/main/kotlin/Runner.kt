@@ -2,6 +2,7 @@ package ft.etachott
 
 import ft.etachott.parser.Parser
 import ft.etachott.scanner.Scanner
+import ft.etachott.utils.AstPrinter
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -32,6 +33,6 @@ class Runner {
 
         if (reporter.hadError) return
 
-        println("hi")
+        println(AstPrinter().print(expr))
     }
 }
