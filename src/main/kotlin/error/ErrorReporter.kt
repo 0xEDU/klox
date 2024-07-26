@@ -1,10 +1,16 @@
-package ft.etachott
+package ft.etachott.errors
 
 import ft.etachott.tokens.Token
 import ft.etachott.tokens.TokenType
 
-class Reporter {
+class ErrorReporter {
     var hadError: Boolean = false
+    var hadRuntimeError: Boolean = false
+
+    private fun report(line: Int, where: String, message: String) {
+        System.err.println("[line $line] $where: $message")
+        hadError = true
+    }
 
     fun error(token: Token, message: String) =
         if (token.type == TokenType.EOF) {
@@ -15,8 +21,8 @@ class Reporter {
 
     fun error(line: Int, message: String) = report(line, "", message)
 
-    fun report(line: Int, where: String, message: String) {
-        System.err.println("[line $line] $where: $message")
-        hadError = true
+    fun runtimeError(error: RuntimeError) {
+        println("${error.message} [line ${error.token.tokenLine}]")
+        hadRuntimeError = true
     }
 }
