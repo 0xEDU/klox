@@ -1,13 +1,13 @@
 package ft.etachott.parser
 
-import ft.etachott.Reporter
+import ft.etachott.errors.ErrorReporter
 import ft.etachott.expression.Expr
 import ft.etachott.tokens.Token
 import ft.etachott.tokens.TokenType
 
 class Parser(
     val tokens: List<Token>,
-    val reporter: Reporter
+    val errorReporter: ErrorReporter
 ) {
     private class ParserError() : RuntimeException()
 
@@ -37,7 +37,7 @@ class Parser(
     }
 
     private fun parserError(token: Token, message: String): ParserError {
-        reporter.error(token, message)
+        errorReporter.error(token, message)
         return ParserError()
     }
 

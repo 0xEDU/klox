@@ -1,5 +1,6 @@
 package ft.etachott
 
+import ft.etachott.errors.ErrorReporter
 import ft.etachott.parser.Parser
 import ft.etachott.scanner.Scanner
 import ft.etachott.utils.AstPrinter
@@ -7,31 +8,30 @@ import java.io.File
 import kotlin.system.exitProcess
 
 class Runner {
-    val reporter = Reporter()
+    val errorReporter = ErrorReporter()
 
     fun runPrompt() {
         while (true) {
             print(">>> ")
             val line = readlnOrNull() ?: break
             runCode(line)
-            reporter.hadError = false
+            errorReporter.hadError = false
         }
     }
 
     fun runFile(path: String) {
         runCode(File(path).readText())
-        if (reporter.hadError) {
-            exitProcess(1)
-        }
+        if (errorReporter.hadError) exitProcess(1)
+        if (errorReporter.hadRuntimeError) exitProcess(2)
     }
 
     private fun runCode(source: String) {
-        val scanner = Scanner(reporter)
+        val scanner = Scanner(errorReporter)
         val tokens = scanner.scanTokens(source)
-        val parser = Parser(tokens, reporter)
+        val parser = Parser(tokens, errorReporter)
         val expr = parser.parse()
 
-        if (reporter.hadError) return
+        if (errorReporter.hadError) return
 
         println(AstPrinter().print(expr))
     }

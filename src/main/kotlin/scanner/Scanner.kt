@@ -1,11 +1,11 @@
 package ft.etachott.scanner
 
-import ft.etachott.Reporter
+import ft.etachott.errors.ErrorReporter
 import ft.etachott.tokens.Token
 import ft.etachott.tokens.TokenType
 
 class Scanner(
-    private val reporter: Reporter,
+    private val errorReporter: ErrorReporter,
 ) {
     private var tokens: MutableList<Token> = mutableListOf()
     private var source: String = ""
@@ -82,7 +82,7 @@ class Scanner(
             in 'a'..'z', in 'A'..'Z', '_' -> identifier()
             '\n' -> line++
             32.toChar(), '\r', '\t' -> {}
-            else -> reporter.error(line, "Unrecognized character: $c")
+            else -> errorReporter.error(line, "Unrecognized character: $c")
         }
     }
 
@@ -112,7 +112,7 @@ class Scanner(
             advance()
         }
         if (isAtEnd()) {
-            reporter.error(line, "Unterminated string")
+            errorReporter.error(line, "Unterminated string")
             return
         }
         advance()
