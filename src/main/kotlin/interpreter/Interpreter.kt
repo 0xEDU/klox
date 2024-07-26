@@ -113,7 +113,7 @@ class Interpreter(
 
     private fun evaluate(expr: Expr?) = expr!!.accept(this)
 
-    fun interpret(expression: Expr) {
+    fun interpret(expression: Expr?) {
         try {
             val value = evaluate(expression)
             println(stringify(value))

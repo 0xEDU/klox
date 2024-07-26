@@ -1,6 +1,7 @@
 package ft.etachott
 
 import ft.etachott.errors.ErrorReporter
+import ft.etachott.interpreter.Interpreter
 import ft.etachott.parser.Parser
 import ft.etachott.scanner.Scanner
 import ft.etachott.utils.AstPrinter
@@ -9,6 +10,7 @@ import kotlin.system.exitProcess
 
 class Runner {
     val errorReporter = ErrorReporter()
+    val interpreter = Interpreter(errorReporter)
 
     fun runPrompt() {
         while (true) {
@@ -33,6 +35,6 @@ class Runner {
 
         if (errorReporter.hadError) return
 
-        println(AstPrinter().print(expr))
+        interpreter.interpret(expr)
     }
 }
