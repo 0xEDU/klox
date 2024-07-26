@@ -4,13 +4,12 @@ import ft.etachott.errors.ErrorReporter
 import ft.etachott.interpreter.Interpreter
 import ft.etachott.parser.Parser
 import ft.etachott.scanner.Scanner
-import ft.etachott.utils.AstPrinter
 import java.io.File
 import kotlin.system.exitProcess
 
 class Runner {
-    val errorReporter = ErrorReporter()
-    val interpreter = Interpreter(errorReporter)
+    private val errorReporter = ErrorReporter()
+    private val interpreter = Interpreter(errorReporter)
 
     fun runPrompt() {
         while (true) {
