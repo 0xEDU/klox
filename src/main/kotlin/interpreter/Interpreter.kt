@@ -3,12 +3,13 @@ package ft.etachott.interpreter
 import ft.etachott.errors.ErrorReporter
 import ft.etachott.errors.RuntimeError
 import ft.etachott.expression.Expr
+import ft.etachott.statement.Stmt
 import ft.etachott.tokens.Token
 import ft.etachott.tokens.TokenType
 
 class Interpreter(
     private val errorReporter: ErrorReporter
-) : Expr.Visitor<Any?> {
+) : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
     private fun checkNumberOperand(operator: Token, operand: Any?) = when (operand) {
         is Double -> {}
         else -> throw RuntimeError(operator, "Operand must be a number.")
@@ -42,6 +43,8 @@ class Interpreter(
         }
         else -> obj.toString()
     }
+
+    private fun execute(stmt: Stmt) = stmt.accept(this)
 
     override fun visitBinaryExpr(expr: Expr.Binary?): Any? {
         val left = evaluate(expr!!.left)
@@ -113,10 +116,19 @@ class Interpreter(
 
     private fun evaluate(expr: Expr?) = expr!!.accept(this)
 
-    fun interpret(expression: Expr?) {
+    override fun visitExpressionStmt(stmt: Stmt.Expression?) {
+        evaluate(stmt!!.expression)
+    }
+
+    override fun visitPrintStmt(stmt: Stmt.Print?) {
+        val value = evaluate(stmt!!.expression)
+        println(stringify(value))
+    }
+    fun interpret(statements: List<Stmt>) {
         try {
-            val value = evaluate(expression)
-            println(stringify(value))
+            statements.forEach {
+                execute(it)
+            }
         } catch (error: RuntimeError) {
             errorReporter.runtimeError(error)
         }

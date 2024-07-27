@@ -30,10 +30,10 @@ class Runner {
         val scanner = Scanner(errorReporter)
         val tokens = scanner.scanTokens(source)
         val parser = Parser(tokens, errorReporter)
-        val expr = parser.parse()
+        val statements = parser.parse()
 
         if (errorReporter.hadError) return
 
-        interpreter.interpret(expr)
+        interpreter.interpret(statements)
     }
 }

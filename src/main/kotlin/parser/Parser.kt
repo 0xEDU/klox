@@ -2,6 +2,7 @@ package ft.etachott.parser
 
 import ft.etachott.errors.ErrorReporter
 import ft.etachott.expression.Expr
+import ft.etachott.statement.Stmt
 import ft.etachott.tokens.Token
 import ft.etachott.tokens.TokenType
 
@@ -62,6 +63,7 @@ class Parser(
         }
     }
 
+    // Expressions
     private fun consume(type: TokenType, message: String): Token =
         if (check(type))
             advance()
@@ -141,12 +143,33 @@ class Parser(
         }
          throw parserError(peek(), "Expect expression.")
     }
+    // !Expression
 
-    fun parse(): Expr? {
-        return try {
-            expression()
-        } catch (parserError: ParserError) {
-            null
+    // Statements
+    private fun statement(): Stmt =
+        if (match(TokenType.PRINT)) printStatement()
+        else expressionStatement()
+
+    private fun printStatement(): Stmt {
+        val value = expression()
+        consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return Stmt.Print(value)
+    }
+
+    private fun expressionStatement(): Stmt {
+        val expr = expression()
+        consume(TokenType.SEMICOLON, "Expect ';' after expression.")
+        return Stmt.Expression(expr)
+    }
+    // !Statements
+
+    fun parse(): List<Stmt> {
+        val statements = mutableListOf<Stmt>()
+
+        while (!isAtEnd()) {
+            statements.addLast(statement())
         }
+
+        return statements
     }
 }
