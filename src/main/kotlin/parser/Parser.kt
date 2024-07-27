@@ -146,6 +146,26 @@ class Parser(
     // !Expression
 
     // Statements
+    private fun declaration(): Stmt? {
+        return try {
+            if (match(TokenType.LET)) letDeclaration()
+            else statement()
+        } catch (error: ParserError) {
+            synchronize()
+            null
+        }
+    }
+
+    private fun letDeclaration(): Stmt {
+        val name = consume(TokenType.IDENTIFIER, "Expect variable name.")
+
+        var initializer: Expr? = null
+        if (match(TokenType.EQUAL))
+            initializer = expression()
+        consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.")
+        return Stmt.Let(name, initializer)
+    }
+
     private fun statement(): Stmt =
         if (match(TokenType.PRINT)) printStatement()
         else expressionStatement()
@@ -167,7 +187,7 @@ class Parser(
         val statements = mutableListOf<Stmt>()
 
         while (!isAtEnd()) {
-            statements.addLast(statement())
+            statements.addLast(declaration())
         }
 
         return statements
