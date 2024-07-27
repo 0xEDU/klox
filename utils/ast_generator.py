@@ -27,10 +27,9 @@ def define_ast(output_dir, base_name, types):
     def write_package():
         if base_name == "Expr":
             stream.write("package ft.etachott.expression\n\n")
-            stream.write("import ft.etachott.tokens.Token\n\n")
         else:
             stream.write("package ft.etachott.statement\n\n")
-            stream.write("import ft.etachott.expression.Expr\n\n")
+            stream.write("import ft.etachott.expression.Expr\n")
 
     if base_name == "Expr":
         output_dir += "expression"
@@ -39,6 +38,7 @@ def define_ast(output_dir, base_name, types):
     path = f"{output_dir}/{base_name}.kt"
     with open(path, "w") as stream:
         write_package()
+        stream.write("import ft.etachott.tokens.Token\n\n")
         stream.write(f"sealed class {base_name} {{\n")
         define_visitor(stream, base_name, types)
         for k, v in types.items():
@@ -56,12 +56,14 @@ def run():
         "Binary": ["left: Expr?", "operator: Token", "right: Expr?"],
         "Grouping": ["expression: Expr?"],
         "Literal": ["value: Any?"],
-        "Unary": ["operator: Token", "right: Expr?"]
+        "Unary": ["operator: Token", "right: Expr?"],
+        "Variable": ["name: Token"],
     }
     define_ast(output_dir, "Expr", expr_types)
     stmt_types = {
         "Expression": ["expression: Expr?"],
         "Print": ["expression: Expr"],
+        "Let": ["name: Token", "initializer: Expr?"],
     }
     define_ast(output_dir, "Stmt", stmt_types)
 
