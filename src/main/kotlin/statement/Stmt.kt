@@ -5,9 +5,15 @@ import ft.etachott.tokens.Token
 
 sealed class Stmt {
     interface Visitor<R> {
+        fun visitBlockStmt(stmt: Block?): R
         fun visitExpressionStmt(stmt: Expression?): R
         fun visitPrintStmt(stmt: Print?): R
         fun visitLetStmt(stmt: Let?): R
+    }
+    data class Block (
+        val statements: List<Stmt>,
+    ) : Stmt() {
+        override fun <R> accept(visitor: Visitor<R>): R = visitor.visitBlockStmt(this) 
     }
     data class Expression (
         val expression: Expr?,

@@ -62,6 +62,7 @@ def run():
     }
     define_ast(output_dir, "Expr", expr_types)
     stmt_types = {
+        "Block": ["statements: List<Stmt>"],
         "Expression": ["expression: Expr?"],
         "Print": ["expression: Expr"],
         "Let": ["name: Token", "initializer: Expr?"],

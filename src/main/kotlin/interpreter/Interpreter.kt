@@ -10,7 +10,7 @@ import ft.etachott.tokens.TokenType
 class Interpreter(
     private val errorReporter: ErrorReporter
 ) : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
-    private val environment = Environment()
+    private var environment = Environment()
 
     private fun checkNumberOperand(operator: Token, operand: Any?) = when (operand) {
         is Double -> {}
@@ -47,6 +47,19 @@ class Interpreter(
     }
 
     private fun execute(stmt: Stmt) = stmt.accept(this)
+
+    private fun executeBlock(statements: List<Stmt>, environment: Environment) {
+        val previous = this.environment
+        try {
+            this.environment = environment
+
+            statements.forEach {
+                execute(it)
+            }
+        } finally {
+            this.environment = previous
+        }
+    }
 
     private fun evaluate(expr: Expr?) = expr!!.accept(this)
 
@@ -125,6 +138,10 @@ class Interpreter(
     }
 
     override fun visitVariableExpr(expr: Expr.Variable?): Any? = environment[expr!!.name]
+
+    override fun visitBlockStmt(stmt: Stmt.Block?) {
+        executeBlock(stmt!!.statements, Environment(environment))
+    }
 
     override fun visitExpressionStmt(stmt: Stmt.Expression?) {
         evaluate(stmt!!.expression)

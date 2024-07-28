@@ -186,6 +186,7 @@ class Parser(
 
     private fun statement(): Stmt =
         if (match(TokenType.PRINT)) printStatement()
+        else if (match(TokenType.LEFT_BRACE)) Stmt.Block(block())
         else expressionStatement()
 
     private fun printStatement(): Stmt {
@@ -198,6 +199,16 @@ class Parser(
         val expr = expression()
         consume(TokenType.SEMICOLON, "Expect ';' after expression.")
         return Stmt.Expression(expr)
+    }
+
+    private fun block(): List<Stmt> {
+        val statements = mutableListOf<Stmt>()
+
+        while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
+            statements.addLast(declaration())
+        }
+        consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
+        return statements
     }
     // !Statements
 
