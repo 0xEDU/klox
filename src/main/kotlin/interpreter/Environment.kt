@@ -3,12 +3,26 @@ package ft.etachott.interpreter
 import ft.etachott.errors.RuntimeError
 import ft.etachott.tokens.Token
 
-class Environment {
-    private val environment: MutableMap<String, Any?> = mutableMapOf()
+class Environment(
+    private val enclosing: Environment? = null
+) {
+    private val values: MutableMap<String, Any?> = mutableMapOf()
 
-    fun define(key: String, value: Any?) = environment.put(key, value)
+    fun define(key: String, value: Any?) = values.put(key, value)
+
+    fun assign(key: Token, value: Any?): Unit =
+        if (values.containsKey(key.lexeme))
+            values[key.lexeme] = value
+        else if (enclosing != null)
+            enclosing.assign(key, value)
+        else
+            throw RuntimeError(key, "Undefined variable '${key.lexeme}'.")
 
     operator fun get(key: Token): Any? =
-        if (environment.containsKey(key.lexeme)) environment[key.lexeme]
-        else throw RuntimeError(key, "Undefined variable \'${key.lexeme}\'.")
+        if (values.containsKey(key.lexeme))
+            values[key.lexeme]
+        else if (enclosing != null)
+            enclosing[key]
+        else
+            throw RuntimeError(key, "Undefined variable \'${key.lexeme}\'.")
 }

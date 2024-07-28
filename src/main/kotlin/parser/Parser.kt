@@ -70,7 +70,25 @@ class Parser(
         else
             throw parserError(peek(), message)
 
-    private fun expression(): Expr = equality()
+    private fun expression(): Expr = assignment()
+
+    private fun assignment(): Expr {
+        val expr = equality()
+
+        if (match(TokenType.EQUAL)) {
+            val equals = previous()
+            val value = assignment()
+
+            if (expr is Expr.Variable) {
+                val name = expr.name
+                return Expr.Assign(name, value)
+            }
+
+            throw parserError(equals, "Invalid assignment target")
+        }
+
+        return expr
+    }
 
     private fun equality(): Expr {
         var expr = comparison()
