@@ -10,6 +10,8 @@ import ft.etachott.tokens.TokenType
 class Interpreter(
     private val errorReporter: ErrorReporter
 ) : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
+    private val environment = Environment()
+
     private fun checkNumberOperand(operator: Token, operand: Any?) = when (operand) {
         is Double -> {}
         else -> throw RuntimeError(operator, "Operand must be a number.")
@@ -45,6 +47,8 @@ class Interpreter(
     }
 
     private fun execute(stmt: Stmt) = stmt.accept(this)
+
+    private fun evaluate(expr: Expr?) = expr!!.accept(this)
 
     override fun visitBinaryExpr(expr: Expr.Binary?): Any? {
         val left = evaluate(expr!!.left)
@@ -114,7 +118,7 @@ class Interpreter(
         }
     }
 
-    private fun evaluate(expr: Expr?) = expr!!.accept(this)
+    override fun visitVariableExpr(expr: Expr.Variable?): Any? = environment[expr!!.name]
 
     override fun visitExpressionStmt(stmt: Stmt.Expression?) {
         evaluate(stmt!!.expression)
@@ -124,6 +128,12 @@ class Interpreter(
         val value = evaluate(stmt!!.expression)
         println(stringify(value))
     }
+
+    override fun visitLetStmt(stmt: Stmt.Let?) {
+        val value: Any? = if (stmt?.initializer == null) null else evaluate(stmt.initializer)
+        environment.define(stmt!!.name.lexeme, value)
+    }
+
     fun interpret(statements: List<Stmt>) {
         try {
             statements.forEach {
