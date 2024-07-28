@@ -53,6 +53,7 @@ def run():
         sys.exit(1)
     output_dir = sys.argv[1]
     expr_types = {
+        "Assign": ["name: Token", "value: Expr?"],
         "Binary": ["left: Expr?", "operator: Token", "right: Expr?"],
         "Grouping": ["expression: Expr?"],
         "Literal": ["value: Any?"],
