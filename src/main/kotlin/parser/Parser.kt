@@ -136,6 +136,9 @@ class Parser(
             return Expr.Literal(previous().literal)
         }
 
+        if (match(TokenType.IDENTIFIER)) return Expr.Variable(previous())
+
+
         if (match(TokenType.LEFT_PAREN)) {
             val expr = expression()
             consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
@@ -158,10 +161,7 @@ class Parser(
 
     private fun letDeclaration(): Stmt {
         val name = consume(TokenType.IDENTIFIER, "Expect variable name.")
-
-        var initializer: Expr? = null
-        if (match(TokenType.EQUAL))
-            initializer = expression()
+        val initializer: Expr? = if (match(TokenType.EQUAL)) expression() else null
         consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.")
         return Stmt.Let(name, initializer)
     }
