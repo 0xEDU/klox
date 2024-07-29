@@ -64,6 +64,7 @@ def run():
     stmt_types = {
         "Block": ["statements: List<Stmt>"],
         "Expression": ["expression: Expr?"],
+        "If": ["condition: Expr", "thenBranch: Stmt", "elseBranch: Stmt?"],
         "Print": ["expression: Expr"],
         "Let": ["name: Token", "initializer: Expr?"],
     }

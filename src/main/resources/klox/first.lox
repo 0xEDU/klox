@@ -1,19 +1,7 @@
-let a = "global a";
-let b = "global b";
-let c = "global c";
-{
-  let a = "outer a";
-  let b = "outer b";
-  {
-    let a = "inner a";
+let a = false;
+if (a) {
+    print "a = ";
     print a;
-    print b;
-    print c;
-  }
-  print a;
-  print b;
-  print c;
+} else {
+    print "false";
 }
-print a;
-print b;
-print c;
