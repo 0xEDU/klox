@@ -6,6 +6,7 @@ import ft.etachott.expression.Expr
 import ft.etachott.statement.Stmt
 import ft.etachott.tokens.Token
 import ft.etachott.tokens.TokenType
+import kotlin.math.exp
 
 class Interpreter(
     private val errorReporter: ErrorReporter
@@ -15,6 +16,17 @@ class Interpreter(
     private fun checkNumberOperand(operator: Token, operand: Any?) = when (operand) {
         is Double -> {}
         else -> throw RuntimeError(operator, "Operand must be a number.")
+    }
+
+    override fun visitLogicalExpr(expr: Expr.Logical?): Any? {
+        val left = evaluate(expr!!.left)
+
+        if (expr.operator.type == TokenType.OR) {
+            if (isTruthy(left)) return left
+        } else {
+            if (!isTruthy(left)) return left
+        }
+        return evaluate(expr.right)
     }
 
     private fun checkNumberOperands(operator: Token, left: Any?, right: Any?) =
