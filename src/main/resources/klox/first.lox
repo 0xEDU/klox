@@ -1,7 +1,5 @@
-let a = false;
-if (a) {
-    print "a = ";
+let a = 0;
+while (a < 10) {
     print a;
-} else {
-    print "false";
+    a = a + 1;
 }
