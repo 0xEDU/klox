@@ -6,7 +6,6 @@ import ft.etachott.expression.Expr
 import ft.etachott.statement.Stmt
 import ft.etachott.tokens.Token
 import ft.etachott.tokens.TokenType
-import kotlin.math.exp
 
 class Interpreter(
     private val errorReporter: ErrorReporter
@@ -170,6 +169,12 @@ class Interpreter(
     override fun visitPrintStmt(stmt: Stmt.Print?) {
         val value = evaluate(stmt!!.expression)
         println(stringify(value))
+    }
+
+    override fun visitWhileStmt(stmt: Stmt.While?) {
+        while (isTruthy(evaluate(stmt!!.condition))) {
+            execute(stmt.body!!)
+        }
     }
 
     override fun visitLetStmt(stmt: Stmt.Let?) {

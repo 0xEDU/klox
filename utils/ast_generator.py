@@ -66,8 +66,9 @@ def run():
         "Block": ["statements: List<Stmt>"],
         "Expression": ["expression: Expr?"],
         "If": ["condition: Expr", "thenBranch: Stmt", "elseBranch: Stmt?"],
-        "Print": ["expression: Expr"],
         "Let": ["name: Token", "initializer: Expr?"],
+        "Print": ["expression: Expr"],
+        "While": ["condition: Expr", "body: Stmt?"],
     }
     define_ast(output_dir, "Stmt", stmt_types)
 
