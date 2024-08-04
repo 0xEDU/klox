@@ -55,6 +55,7 @@ def run():
     expr_types = {
         "Assign": ["name: Token", "value: Expr?"],
         "Binary": ["left: Expr?", "operator: Token", "right: Expr?"],
+        "Call": ["callee: Expr", "paren: Token", "arguments: List<Expr>?"],
         "Grouping": ["expression: Expr?"],
         "Literal": ["value: Any?"],
         "Logical": ["left: Expr?", "operator: Token", "right: Expr?"],
@@ -65,6 +66,7 @@ def run():
     stmt_types = {
         "Block": ["statements: List<Stmt>"],
         "Expression": ["expression: Expr?"],
+        "Function": ["name: Token", "params: List<Token>", "body: List<Stmt>"],
         "If": ["condition: Expr", "thenBranch: Stmt", "elseBranch: Stmt?"],
         "Let": ["name: Token", "initializer: Expr?"],
         "Print": ["expression: Expr"],

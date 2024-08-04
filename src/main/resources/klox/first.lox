@@ -1,5 +1,8 @@
 let a = 0;
-while (a < 10) {
-    print a;
-    a = a + 1;
+let temp;
+
+for (let b = 1; a < 10000; b = temp + b) {
+  print a;
+  temp = a;
+  a = b;
 }

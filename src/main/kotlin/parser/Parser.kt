@@ -164,7 +164,35 @@ class Parser(
             val right = unary()
             return Expr.Unary(operator, right)
         }
-        return primary()
+        return call()
+    }
+
+    private fun call(): Expr {
+        val finishedCall = { callee: Expr ->
+            val arguments = mutableListOf<Expr>()
+
+            if (check(TokenType.RIGHT_PAREN)) {
+                while (match(TokenType.COMMA)) {
+                    if (arguments.size >= 255) {
+                        throw parserError(peek(), "Can't have more than 255 params")
+                    }
+                    arguments.addLast(expression())
+                }
+            }
+            val paren = consume(TokenType.RIGHT_PAREN, "Expect ')' after arguments.")
+            Expr.Call(callee, paren, arguments)
+        }
+        var expr = primary()
+
+        while (true) {
+            if (match(TokenType.LEFT_PAREN)) {
+                expr = finishedCall(expr)
+            } else {
+                break
+            }
+        }
+
+        return expr
     }
 
     private fun primary(): Expr {
@@ -191,6 +219,7 @@ class Parser(
     // Statements
     private fun declaration(): Stmt? {
         return try {
+            if (match(TokenType.FUN)) function("function")
             if (match(TokenType.LET)) letDeclaration()
             else statement()
         } catch (error: ParserError) {
@@ -270,6 +299,28 @@ class Parser(
         val expr = expression()
         consume(TokenType.SEMICOLON, "Expect ';' after expression.")
         return Stmt.Expression(expr)
+    }
+
+    private fun function(kind: String): Stmt {
+        val name = consume(TokenType.IDENTIFIER, "Expect '$kind' name.")
+        consume(TokenType.LEFT_PAREN, "Expect '(' after $kind name.")
+        val parameters = mutableListOf<Token>()
+
+        if (!check(TokenType.RIGHT_PAREN)) {
+            while (match(TokenType.COMMA)) {
+                if (parameters.size >= 255) {
+                    throw parserError(peek(), "Can't have more than 255 params")
+                }
+
+                parameters.addLast(
+                    consume(TokenType.IDENTIFIER, "Expect parameters name.")
+                )
+            }
+        }
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
+        consume(TokenType.LEFT_BRACE, "Expect '{' before $kind body.")
+        val body = block()
+        return Stmt.Function(name, parameters, body)
     }
 
     private fun block(): List<Stmt> {

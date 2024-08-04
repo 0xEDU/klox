@@ -10,7 +10,17 @@ import ft.etachott.tokens.TokenType
 class Interpreter(
     private val errorReporter: ErrorReporter
 ) : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
-    private var environment = Environment()
+    private val globals = Environment()
+    private var environment = globals
+
+    init {
+        globals.define("clock", object: LoxCallable {
+            override fun arity() = 0
+            override fun call(interpreter: Interpreter, arguments: List<Any?>): Double =
+                (System.currentTimeMillis() / 1000.0)
+            override fun toString(): String = "<native fn>"
+        })
+    }
 
     private fun checkNumberOperand(operator: Token, operand: Any?) = when (operand) {
         is Double -> {}
@@ -126,6 +136,26 @@ class Interpreter(
             TokenType.EQUAL_EQUAL -> isEqual(left, right)
             else -> null
         }
+    }
+
+    override fun visitCallExpr(expr: Expr.Call?): Any? {
+        val callee: Any? = evaluate(expr!!.callee)
+        val arguments = mutableListOf<Any?>()
+
+        if (expr.arguments != null) {
+            expr.arguments.forEach {
+                arguments.addLast(evaluate(it))
+            }
+        }
+
+        if (callee !is LoxCallable) {
+            throw RuntimeError(expr.paren, "Can only call functions and classes")
+        }
+
+        if (arguments.size != callee.arity()) {
+            throw RuntimeError(expr.paren, "Expected ${callee.arity()}, but got ${arguments.size}.")
+        }
+        return callee.call(this, arguments)
     }
 
     override fun visitGroupingExpr(expr: Expr.Grouping?): Any? = evaluate(expr!!.expression)
