@@ -3,6 +3,7 @@ package ft.etachott.interpreter
 import ft.etachott.errors.ErrorReporter
 import ft.etachott.errors.RuntimeError
 import ft.etachott.expression.Expr
+import ft.etachott.interpreter.impl.LoxFunction
 import ft.etachott.statement.Stmt
 import ft.etachott.tokens.Token
 import ft.etachott.tokens.TokenType
@@ -10,7 +11,7 @@ import ft.etachott.tokens.TokenType
 class Interpreter(
     private val errorReporter: ErrorReporter
 ) : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
-    private val globals = Environment()
+    val globals = Environment()
     private var environment = globals
 
     init {
@@ -69,7 +70,7 @@ class Interpreter(
 
     private fun execute(stmt: Stmt) = stmt.accept(this)
 
-    private fun executeBlock(statements: List<Stmt>, environment: Environment) {
+    fun executeBlock(statements: List<Stmt>, environment: Environment) {
         val previous = this.environment
         try {
             this.environment = environment
@@ -186,6 +187,11 @@ class Interpreter(
 
     override fun visitExpressionStmt(stmt: Stmt.Expression?) {
         evaluate(stmt!!.expression)
+    }
+
+    override fun visitFunctionStmt(stmt: Stmt.Function?) {
+        val function = LoxFunction(stmt)
+        environment.define(stmt!!.name.lexeme, function)
     }
 
     override fun visitIfStmt(stmt: Stmt.If?) {

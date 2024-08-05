@@ -171,13 +171,13 @@ class Parser(
         val finishedCall = { callee: Expr ->
             val arguments = mutableListOf<Expr>()
 
-            if (check(TokenType.RIGHT_PAREN)) {
-                while (match(TokenType.COMMA)) {
+            if (!check(TokenType.RIGHT_PAREN)) {
+                do {
                     if (arguments.size >= 255) {
                         throw parserError(peek(), "Can't have more than 255 params")
                     }
                     arguments.addLast(expression())
-                }
+                } while (match(TokenType.COMMA))
             }
             val paren = consume(TokenType.RIGHT_PAREN, "Expect ')' after arguments.")
             Expr.Call(callee, paren, arguments)
@@ -220,7 +220,7 @@ class Parser(
     private fun declaration(): Stmt? {
         return try {
             if (match(TokenType.FUN)) function("function")
-            if (match(TokenType.LET)) letDeclaration()
+            else if (match(TokenType.LET)) letDeclaration()
             else statement()
         } catch (error: ParserError) {
             synchronize()
@@ -307,7 +307,7 @@ class Parser(
         val parameters = mutableListOf<Token>()
 
         if (!check(TokenType.RIGHT_PAREN)) {
-            while (match(TokenType.COMMA)) {
+            do {
                 if (parameters.size >= 255) {
                     throw parserError(peek(), "Can't have more than 255 params")
                 }
@@ -315,7 +315,7 @@ class Parser(
                 parameters.addLast(
                     consume(TokenType.IDENTIFIER, "Expect parameters name.")
                 )
-            }
+            } while (match(TokenType.COMMA))
         }
         consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
         consume(TokenType.LEFT_BRACE, "Expect '{' before $kind body.")
