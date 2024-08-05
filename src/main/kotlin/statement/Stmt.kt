@@ -11,6 +11,7 @@ sealed class Stmt {
         fun visitIfStmt(stmt: If?): R
         fun visitLetStmt(stmt: Let?): R
         fun visitPrintStmt(stmt: Print?): R
+        fun visitReturnStmt(stmt: Return?): R
         fun visitWhileStmt(stmt: While?): R
     }
     data class Block (
@@ -47,6 +48,12 @@ sealed class Stmt {
         val expression: Expr,
     ) : Stmt() {
         override fun <R> accept(visitor: Visitor<R>): R = visitor.visitPrintStmt(this) 
+    }
+    data class Return (
+        val keyword: Token,
+        val value: Expr?,
+    ) : Stmt() {
+        override fun <R> accept(visitor: Visitor<R>): R = visitor.visitReturnStmt(this) 
     }
     data class While (
         val condition: Expr,

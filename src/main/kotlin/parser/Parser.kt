@@ -5,6 +5,7 @@ import ft.etachott.expression.Expr
 import ft.etachott.statement.Stmt
 import ft.etachott.tokens.Token
 import ft.etachott.tokens.TokenType
+import kotlin.math.exp
 
 class Parser(
     val tokens: List<Token>,
@@ -237,6 +238,7 @@ class Parser(
 
     private fun statement(): Stmt =
         if (match(TokenType.PRINT)) printStatement()
+        else if (match(TokenType.RETURN)) returnStatement()
         else if (match(TokenType.WHILE)) whileStatement()
         else if (match(TokenType.FOR)) forStatement()
         else if (match(TokenType.IF)) ifStatement()
@@ -293,6 +295,14 @@ class Parser(
         val value = expression()
         consume(TokenType.SEMICOLON, "Expect ';' after value.")
         return Stmt.Print(value)
+    }
+
+    private fun returnStatement(): Stmt {
+        val keyword = previous()
+        val value: Expr? = if (!check(TokenType.SEMICOLON)) expression() else null
+
+        consume(TokenType.SEMICOLON,  "Expect ';' after return value.")
+        return Stmt.Return(keyword, value)
     }
 
     private fun expressionStatement(): Stmt {

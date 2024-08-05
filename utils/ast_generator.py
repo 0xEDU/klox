@@ -70,6 +70,7 @@ def run():
         "If": ["condition: Expr", "thenBranch: Stmt", "elseBranch: Stmt?"],
         "Let": ["name: Token", "initializer: Expr?"],
         "Print": ["expression: Expr"],
+        "Return": ["keyword: Token", "value: Expr?"],
         "While": ["condition: Expr", "body: Stmt?"],
     }
     define_ast(output_dir, "Stmt", stmt_types)
