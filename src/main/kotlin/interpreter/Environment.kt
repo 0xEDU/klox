@@ -25,4 +25,12 @@ class Environment(
             enclosing[key]
         else
             throw RuntimeError(key, "Undefined variable \'${key.lexeme}\'.")
+
+    private fun ancestor(distance: Int) = (1..distance).fold(this as Environment?) { environment, _ ->
+        environment!!.enclosing
+    }
+
+    fun getAt(distance: Int, name: String): Any? = ancestor(distance)!!.values[name]
+
+    fun assignAt(distance: Int, name: Token, value: Any?) = ancestor(distance)!!.values.put(name.lexeme, value)
 }

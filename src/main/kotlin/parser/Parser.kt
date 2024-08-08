@@ -4,8 +4,7 @@ import ft.etachott.errors.ErrorReporter
 import ft.etachott.expression.Expr
 import ft.etachott.statement.Stmt
 import ft.etachott.tokens.Token
-import ft.etachott.tokens.TokenType
-import kotlin.math.exp
+import ft.etachott.enums.TokenType
 
 class Parser(
     val tokens: List<Token>,

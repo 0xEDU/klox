@@ -1,4 +1,4 @@
-package ft.etachott.tokens
+package ft.etachott.enums
 
 enum class TokenType {
     // Single-character tokens

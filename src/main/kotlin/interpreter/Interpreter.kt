@@ -6,13 +6,14 @@ import ft.etachott.expression.Expr
 import ft.etachott.interpreter.impl.LoxFunction
 import ft.etachott.statement.Stmt
 import ft.etachott.tokens.Token
-import ft.etachott.tokens.TokenType
+import ft.etachott.enums.TokenType
 
 class Interpreter(
     private val errorReporter: ErrorReporter
 ) : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
     val globals = Environment()
     private var environment = globals
+    private val locals = mutableMapOf<Expr, Int>()
 
     init {
         globals.define("clock", object: LoxCallable {
@@ -22,6 +23,8 @@ class Interpreter(
             override fun toString(): String = "<native fn>"
         })
     }
+
+    fun resolve(expr: Expr, depth: Int) = locals.put(expr, depth)
 
     private fun checkNumberOperand(operator: Token, operand: Any?) = when (operand) {
         is Double -> {}
@@ -87,7 +90,14 @@ class Interpreter(
 
     override fun visitAssignExpr(expr: Expr.Assign?): Any? {
         val value = evaluate(expr!!.value)
-        environment.assign(expr.name, value)
+
+        val distance: Int? = locals[expr]
+        if (distance != null) {
+            environment.assignAt(distance, expr.name, value)
+        } else {
+            globals.assign(expr.name, expr.value)
+        }
+
         return value
     }
 
@@ -179,7 +189,15 @@ class Interpreter(
         }
     }
 
-    override fun visitVariableExpr(expr: Expr.Variable?): Any? = environment[expr!!.name]
+    override fun visitVariableExpr(expr: Expr.Variable?): Any? = lookUpVariable(expr!!.name, expr)
+
+    private fun lookUpVariable(name: Token, expr: Expr): Any?  {
+        val distance: Int? = locals[expr]
+        return if (distance != null)
+            environment.getAt(distance, name.lexeme)
+        else
+            globals[name]
+    }
 
     override fun visitBlockStmt(stmt: Stmt.Block?) {
         executeBlock(stmt!!.statements, Environment(environment))

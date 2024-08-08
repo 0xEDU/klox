@@ -1,5 +1,7 @@
 package ft.etachott.tokens
 
+import ft.etachott.enums.TokenType
+
 class Token(
     val type: TokenType,
     val lexeme: String,

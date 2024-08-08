@@ -2,7 +2,7 @@ package ft.etachott.scanner
 
 import ft.etachott.errors.ErrorReporter
 import ft.etachott.tokens.Token
-import ft.etachott.tokens.TokenType
+import ft.etachott.enums.TokenType
 
 class Scanner(
     private val errorReporter: ErrorReporter,

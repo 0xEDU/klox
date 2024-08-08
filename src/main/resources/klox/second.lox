@@ -1,13 +1,10 @@
-fun makeCounter() {
-  let i = 0;
-  fun count() {
-    i = i + 1;
-    print i;
+let a = "global";
+{
+  fun showA() {
+    print a;
   }
 
-  return count;
+  showA();
+  let a = "block";
+  showA();
 }
-
-let counter = makeCounter();
-counter(); // "1".
-counter(); // "2".

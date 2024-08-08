@@ -1,7 +1,7 @@
 package ft.etachott.errors
 
 import ft.etachott.tokens.Token
-import ft.etachott.tokens.TokenType
+import ft.etachott.enums.TokenType
 
 class ErrorReporter {
     var hadError: Boolean = false

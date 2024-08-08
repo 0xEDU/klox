@@ -3,6 +3,7 @@ package ft.etachott
 import ft.etachott.errors.ErrorReporter
 import ft.etachott.interpreter.Interpreter
 import ft.etachott.parser.Parser
+import ft.etachott.resolver.Resolver
 import ft.etachott.scanner.Scanner
 import java.io.File
 import kotlin.system.exitProcess
@@ -31,6 +32,10 @@ class Runner {
         val tokens = scanner.scanTokens(source)
         val parser = Parser(tokens, errorReporter)
         val statements = parser.parse()
+
+        if (errorReporter.hadError) return
+        val resolver = Resolver(errorReporter, interpreter)
+        resolver.resolve(statements)
 
         if (errorReporter.hadError) return
 
